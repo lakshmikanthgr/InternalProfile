@@ -11,7 +11,7 @@ namespace InternalProfile.API.Data
         private readonly DataContext _context;
         public AuthRepository(DataContext context)
         {
-            this._context = context;
+            _context = context;
         }
         public async Task<User> Login(string username, string password)
         {
@@ -64,7 +64,7 @@ namespace InternalProfile.API.Data
             
         }
 
-        public async Task<bool> UserExist(string username)
+        public async Task<bool> UserExists(string username)
         {
             if(await _context.Users.AnyAsync(x=>x.Username == username)) 
             return true;

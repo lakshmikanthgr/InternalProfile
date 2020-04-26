@@ -1,19 +1,18 @@
+using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using InternalProfile.API.Data;
 using InternalProfile.API.Dtos;
 using InternalProfile.API.Models;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.Extensions.Configuration;
-using System.Text;
-using System;
-using System.IdentityModel.Tokens.Jwt;
+using Microsoft.IdentityModel.Tokens;
 
 namespace InternalProfile.API.Controllers
 {
-    [Microsoft.AspNetCore.Mvc.Route("api/[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class AuthController : ControllerBase
     {
@@ -31,8 +30,9 @@ namespace InternalProfile.API.Controllers
             //validation request
             userForRegisterDto.Username = userForRegisterDto.Username.ToLower();
 
-            if (await _repo.UserExist(userForRegisterDto.Username))
-                return BadRequest("User name already exists");
+            if (await _repo.UserExists(userForRegisterDto.Username))
+                return BadRequest("Username already exists");
+
             var userToCreate = new User
             {
                 Username = userForRegisterDto.Username
@@ -40,8 +40,7 @@ namespace InternalProfile.API.Controllers
       
             var createdUser = await _repo.Register(userToCreate, userForRegisterDto.Password);
 
-            return CreatedAtRoute("GetUser", new { controller = "Users", 
-                id = createdUser.Id });
+            return StatusCode(201);
         }
         [HttpPost("login")]
         public async Task<IActionResult> Login(UserForLoginDto userForLoginDto)
@@ -73,7 +72,7 @@ namespace InternalProfile.API.Controllers
 
             return Ok(new
             {
-                token = tokenHandler.WriteToken(token),
+                token = tokenHandler.WriteToken(token)
             });
         }
 
